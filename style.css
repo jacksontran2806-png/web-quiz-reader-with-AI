@@ -129,7 +129,7 @@ body {
 
 .wing-left {
   left: -60px;
-  transform: translateY(-50%) rotate(-15deg);
+  transform: translateY(-50%) rotate(-15deg) scaleX(-1);
 }
 
 .wing-right {
