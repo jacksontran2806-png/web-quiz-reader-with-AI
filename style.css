@@ -118,7 +118,7 @@ body {
   width: 130px;
   height: 160px;
   object-fit: cover;
-  object-position: top;
+  object-position: center top;
   border-radius: 8px;
   border: 2px solid var(--accent);
   top: 50%;
