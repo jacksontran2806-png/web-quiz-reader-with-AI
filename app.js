@@ -55,28 +55,13 @@ function parseQuestions(text) {
 
     if (lastLine.startsWith('YESNO:')) {
       const answer = lastLine.replace('YESNO:', '').trim();
-      qs.push({
-        question: lines[0],
-        type: 'yesno',
-        answer: answer
-      });
+      qs.push({ question: lines[0], type: 'yesno', answer: answer });
     } else if (lastLine.startsWith('MULTI:')) {
       const answer = lastLine.replace('MULTI:', '').trim().toUpperCase();
-      qs.push({
-        question: lines[0],
-        type: 'multi',
-        options: lines.slice(1, 5),
-        answer: answer
-      });
+      qs.push({ question: lines[0], type: 'multi', options: lines.slice(1, 5), answer: answer });
     } else {
-      // fallback: treat as old format
       if (lines.length < 6) continue;
-      qs.push({
-        question: lines[0],
-        type: 'multi',
-        options: lines.slice(1, 5),
-        answer: lines[5].toUpperCase()
-      });
+      qs.push({ question: lines[0], type: 'multi', options: lines.slice(1, 5), answer: lines[5].toUpperCase() });
     }
   }
   return qs;
@@ -97,30 +82,23 @@ function validateQuestions(qs) {
 convertBtn.addEventListener('click', async () => {
   const raw = pasteInput.value.trim();
   if (!raw) { convertStatus.textContent = 'Please paste some questions first.'; return; }
-
   convertBtn.disabled = true;
   convertStatus.textContent = '✨ Converting with AI...';
-
   try {
     const res = await fetch('/api/convert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: raw })
     });
-
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Conversion failed');
-
     const qs = parseQuestions(data.result);
     if (!qs.length) throw new Error('No valid questions found after conversion.');
-
     const err = validateQuestions(qs);
     if (err) throw new Error(err);
-
     questions = qs;
     convertStatus.textContent = `✅ ${qs.length} questions ready!`;
     setTimeout(startQuiz, 800);
-
   } catch (e) {
     convertStatus.textContent = `❌ ${e.message}`;
     convertBtn.disabled = false;
@@ -133,14 +111,11 @@ loadFileBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', async () => {
   const file = fileInput.files[0];
   if (!file) return;
-
   const ext = file.name.split('.').pop().toLowerCase();
-
   if (ext === 'txt') {
     const reader = new FileReader();
     reader.onload = e => sendTextToAI(e.target.result);
     reader.readAsText(file, 'utf-8');
-
   } else if (ext === 'pdf') {
     convertStatus.textContent = '📄 Reading PDF...';
     const pdfjsLib = await loadPDFJS();
@@ -153,7 +128,6 @@ fileInput.addEventListener('change', async () => {
       fullText += content.items.map(item => item.str).join(' ') + '\n';
     }
     sendTextToAI(fullText);
-
   } else {
     alert('Invalid file type. Please upload a .txt or .pdf file only.');
     fileInput.value = '';
@@ -178,7 +152,6 @@ async function sendTextToAI(text) {
   if (!text.trim()) { alert('File appears to be empty.'); return; }
   convertStatus.textContent = '✨ Converting with AI...';
   convertBtn.disabled = true;
-
   try {
     const res = await fetch('/api/convert', {
       method: 'POST',
@@ -187,16 +160,13 @@ async function sendTextToAI(text) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Conversion failed');
-
     const qs = parseQuestions(data.result);
     if (!qs.length) throw new Error('No valid questions found after conversion.');
     const err = validateQuestions(qs);
     if (err) throw new Error(err);
-
     questions = qs;
     convertStatus.textContent = `✅ ${qs.length} questions ready!`;
     setTimeout(startQuiz, 800);
-
   } catch (e) {
     convertStatus.textContent = `❌ ${e.message}`;
     convertBtn.disabled = false;
@@ -238,11 +208,8 @@ function showQuestion() {
   optionsWrap.innerHTML = '';
 
   if (q.type === 'yesno') {
-    // render Yes / No buttons
     submitBtn.classList.add('hidden');
-    const display = ['True', 'False'];
-
-    display.forEach(opt => {
+    ['True', 'False'].forEach(opt => {
       const btn = document.createElement('button');
       btn.className = 'option-btn yesno-btn';
       btn.textContent = opt;
@@ -250,12 +217,10 @@ function showQuestion() {
       btn.addEventListener('click', () => submitYesNo(btn, q));
       optionsWrap.appendChild(btn);
     });
-
   } else {
-    // render A/B/C/D options
     q.options.forEach(opt => {
       const btn = document.createElement('button');
-      btn.className   = 'option-btn';
+      btn.className = 'option-btn';
       btn.textContent = opt;
       btn.dataset.letter = opt[0].toUpperCase();
       btn.addEventListener('click', () => selectOption(btn));
@@ -267,12 +232,9 @@ function showQuestion() {
 }
 
 function submitYesNo(btn, q) {
-  // lock all buttons
   document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-
   const userAnswer = btn.dataset.letter.toLowerCase();
   const correct = q.answer.toLowerCase();
-
   if (userAnswer === correct) {
     score++;
     btn.classList.add('correct');
@@ -280,19 +242,17 @@ function submitYesNo(btn, q) {
     feedback.style.color = 'var(--success)';
   } else {
     btn.classList.add('wrong');
-    // highlight correct answer
     document.querySelectorAll('.option-btn').forEach(b => {
       if (b.dataset.letter.toLowerCase() === correct) b.classList.add('correct');
     });
     feedback.textContent = `❌  Wrong! Correct answer: ${q.answer}`;
     feedback.style.color = 'var(--error)';
   }
-
   nextBtn.classList.remove('hidden');
   nextBtn.textContent = currentIdx + 1 < questions.length ? 'Next Question →' : 'See Results';
 }
 
-
+function selectOption(btn) {
   document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   selected = btn.dataset.letter;
@@ -300,14 +260,12 @@ function submitYesNo(btn, q) {
 
 submitBtn.addEventListener('click', () => {
   if (!selected) { feedback.textContent = 'Please select an answer first!'; feedback.style.color = 'var(--muted)'; return; }
-
   const correct = questions[currentIdx].answer;
   document.querySelectorAll('.option-btn').forEach(btn => {
     btn.disabled = true;
     if (btn.dataset.letter === correct) btn.classList.add('correct');
     else if (btn.dataset.letter === selected) btn.classList.add('wrong');
   });
-
   if (selected === correct) {
     score++;
     feedback.textContent = '✅  Correct!';
@@ -316,7 +274,6 @@ submitBtn.addEventListener('click', () => {
     feedback.textContent = `❌  Wrong! Correct answer: ${correct}`;
     feedback.style.color = 'var(--error)';
   }
-
   submitBtn.classList.add('hidden');
   nextBtn.classList.remove('hidden');
   nextBtn.textContent = currentIdx + 1 < questions.length ? 'Next Question →' : 'See Results';
@@ -335,20 +292,17 @@ nextBtn.addEventListener('click', () => {
 function showResults() {
   const tot = questions.length;
   const pct = Math.round((score / tot) * 100);
-
   let grade, color;
-  if (pct === 100) { grade = 'Perfect! 🏆';           color = 'var(--success)'; }
-  else if (pct >= 70) { grade = 'Well done! 🎉';      color = 'var(--accent)';  }
-  else if (pct >= 40) { grade = 'Keep practising 📚'; color = '#f39c12';        }
-  else                { grade = 'Better luck next time 💪'; color = 'var(--error)'; }
-
-  gradeText.textContent    = grade;
-  scoreDisplay.textContent = `${score} / ${tot}`;
-  scoreDisplay.style.color = color;
-  pctDisplay.textContent   = `${pct}% correct`;
+  if (pct === 100)      { grade = 'Perfect! 🏆';                color = 'var(--success)'; }
+  else if (pct >= 70)   { grade = 'Well done! 🎉';              color = 'var(--accent)';  }
+  else if (pct >= 40)   { grade = 'Keep practising 📚';         color = '#f39c12';        }
+  else                  { grade = 'Better luck next time 💪';   color = 'var(--error)';   }
+  gradeText.textContent       = grade;
+  scoreDisplay.textContent    = `${score} / ${tot}`;
+  scoreDisplay.style.color    = color;
+  pctDisplay.textContent      = `${pct}% correct`;
   scoreCard.style.borderColor = color;
-
-  progressFill.style.width = '100%';
+  progressFill.style.width    = '100%';
   showScreen('results');
 }
 
