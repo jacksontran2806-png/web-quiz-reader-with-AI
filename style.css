@@ -1,0 +1,306 @@
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0f0f1a;
+  --card:    #1a1a2e;
+  --accent:  #e94560;
+  --accent2: #0f3460;
+  --text:    #eaeaea;
+  --muted:   #7a7a9a;
+  --success: #2ecc71;
+  --error:   #e74c3c;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  min-height: 100vh;
+}
+
+/* ── Splash ───────────────────────────────────────────────────────── */
+#splash {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+  animation: fadeOut 0.5s ease 2.2s forwards;
+}
+
+.splash-inner {
+  text-align: center;
+  width: 380px;
+  background: var(--card);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(233,69,96,0.2);
+}
+
+.splash-accent { background: var(--accent); height: 4px; }
+
+.splash-inner p.splash-crafted {
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 32px;
+  font-size: 13px;
+}
+
+.splash-inner h1.splash-name {
+  font-family: Georgia, serif;
+  font-size: 36px;
+  color: var(--accent);
+  margin: 8px 0 4px;
+  letter-spacing: 2px;
+}
+
+.splash-inner p.splash-title {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; pointer-events: none; }
+}
+
+/* ── App ──────────────────────────────────────────────────────────── */
+#app { max-width: 720px; margin: 0 auto; min-height: 100vh; position: relative; }
+
+.hidden { display: none !important; }
+
+.screen { display: none; flex-direction: column; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* ── Topbar ───────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--accent2);
+  padding: 28px 40px 20px;
+  text-align: center;
+}
+
+.topbar h1 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.topbar p {
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.accent-bar { background: var(--accent); height: 3px; }
+
+/* ── Body ─────────────────────────────────────────────────────────── */
+.body {
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--accent2);
+  border-radius: 4px;
+  padding: 20px 24px;
+}
+
+.card-label {
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.card-sub {
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.q-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: bold;
+}
+
+/* ── Textarea ─────────────────────────────────────────────────────── */
+textarea {
+  width: 100%;
+  height: 180px;
+  background: var(--bg);
+  border: 1px solid var(--accent2);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  padding: 12px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+textarea:focus { border-color: var(--accent); }
+
+/* ── Buttons ──────────────────────────────────────────────────────── */
+.btn {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  align-self: center;
+  min-width: 220px;
+}
+
+.btn:hover { background: #ff6b81; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-secondary {
+  background: var(--accent2);
+}
+
+.btn-secondary:hover { background: #1a4a80; }
+
+.btn-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Divider ──────────────────────────────────────────────────────── */
+.divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ── Muted text ───────────────────────────────────────────────────── */
+.muted {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ── Progress bar ─────────────────────────────────────────────────── */
+.progress-wrap {
+  background: var(--accent2);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: var(--accent);
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* ── Options ──────────────────────────────────────────────────────── */
+#options-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  background: var(--card);
+  border: 1px solid var(--accent2);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  padding: 12px 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: #1f1f3a;
+}
+
+.option-btn.selected {
+  border-color: var(--accent);
+  background: #1f1f3a;
+}
+
+.option-btn.correct {
+  border-color: var(--success);
+  background: rgba(46,204,113,0.1);
+  color: var(--success);
+}
+
+.option-btn.wrong {
+  border-color: var(--error);
+  background: rgba(231,76,60,0.1);
+  color: var(--error);
+}
+
+.option-btn:disabled { cursor: default; }
+
+/* ── Feedback ─────────────────────────────────────────────────────── */
+.feedback {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  min-height: 20px;
+}
+
+/* ── Score card ───────────────────────────────────────────────────── */
+.score-card {
+  text-align: center;
+  align-self: center;
+  min-width: 220px;
+}
+
+#score-display {
+  font-family: Georgia, serif;
+  font-size: 52px;
+  font-weight: bold;
+}
+
+/* ── Credit ───────────────────────────────────────────────────────── */
+.credit {
+  text-align: center;
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* ── Watermark ────────────────────────────────────────────────────── */
+.watermark {
+  position: fixed;
+  bottom: 10px;
+  right: 16px;
+  color: var(--muted);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+/* ── Mobile ───────────────────────────────────────────────────────── */
+@media (max-width: 500px) {
+  .topbar { padding: 20px; }
+  .body { padding: 20px; }
+  .topbar h1 { font-size: 22px; }
+}

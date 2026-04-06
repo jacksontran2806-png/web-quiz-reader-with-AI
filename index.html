@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz App — by lamhariem</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-inner">
+      <div class="splash-accent top"></div>
+      <p class="splash-crafted">crafted by</p>
+      <h1 class="splash-name">lamhariem</h1>
+      <p class="splash-title">✦ Quiz App ✦</p>
+      <div class="splash-accent bottom"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="hidden">
+
+    <!-- SCREEN 1: Welcome / Paste -->
+    <div id="screen-welcome" class="screen active">
+      <div class="topbar">
+        <h1>✦ Quiz App ✦</h1>
+        <p>Paste your questions in any format — AI will handle the rest</p>
+      </div>
+      <div class="accent-bar"></div>
+
+      <div class="body">
+        <div class="card">
+          <p class="card-label">📋 Paste your questions below</p>
+          <p class="card-sub">Any format works — copied from a website, numbered list, paragraph, anything.</p>
+          <textarea id="paste-input" placeholder="Paste your messy questions here..."></textarea>
+        </div>
+
+        <button class="btn" id="convert-btn">✨  Convert with AI</button>
+        <p class="muted" id="convert-status"></p>
+
+        <div class="divider">— or —</div>
+
+        <button class="btn btn-secondary" id="load-file-btn">📂  Load .txt File</button>
+        <input type="file" id="file-input" accept=".txt" style="display:none"/>
+        <p class="muted">File must follow the standard format</p>
+      </div>
+
+      <div class="watermark">✦ lamhariem</div>
+    </div>
+
+    <!-- SCREEN 2: Question -->
+    <div id="screen-question" class="screen">
+      <div class="topbar" id="q-topbar">
+        <h1 id="q-title">Question 1 of 5</h1>
+        <p id="q-score">Score so far: 0</p>
+      </div>
+      <div class="accent-bar"></div>
+
+      <div class="body">
+        <div class="progress-wrap">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="card q-card">
+          <p id="q-text"></p>
+        </div>
+
+        <div id="options-wrap"></div>
+
+        <p id="feedback" class="feedback"></p>
+        <button class="btn" id="submit-btn">Submit Answer</button>
+        <button class="btn btn-secondary hidden" id="next-btn">Next Question →</button>
+      </div>
+
+      <div class="watermark">✦ lamhariem</div>
+    </div>
+
+    <!-- SCREEN 3: Results -->
+    <div id="screen-results" class="screen">
+      <div class="topbar">
+        <h1>Quiz Complete!</h1>
+        <p id="grade-text"></p>
+      </div>
+      <div class="accent-bar"></div>
+
+      <div class="body">
+        <div class="card score-card" id="score-card">
+          <p id="score-display"></p>
+          <p id="pct-display" class="muted"></p>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" id="play-again-btn">🔄  Play Again</button>
+          <button class="btn btn-secondary" id="new-file-btn">📂  New Questions</button>
+        </div>
+
+        <p class="credit">made with ♥ by lamhariem</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
