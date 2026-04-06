@@ -49,12 +49,35 @@ function parseQuestions(text) {
   const qs = [];
   for (const block of blocks) {
     const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length < 6) continue;
-    qs.push({
-      question: lines[0],
-      options:  lines.slice(1, 5),
-      answer:   lines[5].toUpperCase()
-    });
+    if (lines.length < 2) continue;
+
+    const lastLine = lines[lines.length - 1];
+
+    if (lastLine.startsWith('YESNO:')) {
+      const answer = lastLine.replace('YESNO:', '').trim();
+      qs.push({
+        question: lines[0],
+        type: 'yesno',
+        answer: answer
+      });
+    } else if (lastLine.startsWith('MULTI:')) {
+      const answer = lastLine.replace('MULTI:', '').trim().toUpperCase();
+      qs.push({
+        question: lines[0],
+        type: 'multi',
+        options: lines.slice(1, 5),
+        answer: answer
+      });
+    } else {
+      // fallback: treat as old format
+      if (lines.length < 6) continue;
+      qs.push({
+        question: lines[0],
+        type: 'multi',
+        options: lines.slice(1, 5),
+        answer: lines[5].toUpperCase()
+      });
+    }
   }
   return qs;
 }
@@ -62,9 +85,9 @@ function parseQuestions(text) {
 function validateQuestions(qs) {
   const valid = ['A','B','C','D'];
   for (let i = 0; i < qs.length; i++) {
-    if (!valid.includes(qs[i].answer))
+    if (qs[i].type === 'multi' && !valid.includes(qs[i].answer))
       return `Question ${i+1}: answer "${qs[i].answer}" is not A/B/C/D.`;
-    if (qs[i].options.length !== 4)
+    if (qs[i].type === 'multi' && qs[i].options.length !== 4)
       return `Question ${i+1}: must have exactly 4 options.`;
   }
   return null;
@@ -213,19 +236,63 @@ function showQuestion() {
   progressFill.style.width = `${((num - 1) / tot) * 100}%`;
 
   optionsWrap.innerHTML = '';
-  q.options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className   = 'option-btn';
-    btn.textContent = opt;
-    btn.dataset.letter = opt[0].toUpperCase();
-    btn.addEventListener('click', () => selectOption(btn));
-    optionsWrap.appendChild(btn);
-  });
+
+  if (q.type === 'yesno') {
+    // render Yes / No buttons
+    submitBtn.classList.add('hidden');
+    const display = ['True', 'False'];
+
+    display.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn yesno-btn';
+      btn.textContent = opt;
+      btn.dataset.letter = opt;
+      btn.addEventListener('click', () => submitYesNo(btn, q));
+      optionsWrap.appendChild(btn);
+    });
+
+  } else {
+    // render A/B/C/D options
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className   = 'option-btn';
+      btn.textContent = opt;
+      btn.dataset.letter = opt[0].toUpperCase();
+      btn.addEventListener('click', () => selectOption(btn));
+      optionsWrap.appendChild(btn);
+    });
+  }
 
   showScreen('question');
 }
 
-function selectOption(btn) {
+function submitYesNo(btn, q) {
+  // lock all buttons
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+  const userAnswer = btn.dataset.letter.toLowerCase();
+  const correct = q.answer.toLowerCase();
+
+  if (userAnswer === correct) {
+    score++;
+    btn.classList.add('correct');
+    feedback.textContent = '✅  Correct!';
+    feedback.style.color = 'var(--success)';
+  } else {
+    btn.classList.add('wrong');
+    // highlight correct answer
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.dataset.letter.toLowerCase() === correct) b.classList.add('correct');
+    });
+    feedback.textContent = `❌  Wrong! Correct answer: ${q.answer}`;
+    feedback.style.color = 'var(--error)';
+  }
+
+  nextBtn.classList.remove('hidden');
+  nextBtn.textContent = currentIdx + 1 < questions.length ? 'Next Question →' : 'See Results';
+}
+
+
   document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   selected = btn.dataset.letter;

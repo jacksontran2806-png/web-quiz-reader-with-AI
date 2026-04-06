@@ -8,27 +8,28 @@ export default async function handler(req, res) {
 
   const prompt = `You are a quiz formatter. Convert the following text into a strict quiz format.
 
-Rules:
-- Each question must have exactly 4 options labeled A) B) C) D)
-- The correct answer letter goes alone on the last line of each block
-- Separate questions with a single blank line
-- Do not include any extra text, explanations, or numbering
-- Output ONLY the formatted questions, nothing else
+IMPORTANT: Detect the language of the input and respond in that SAME language. If the input is Vietnamese, output Vietnamese. If English, output English. Match the language exactly.
 
-Example output:
+There are TWO question types you must detect and format correctly:
+
+TYPE 1 - Multiple choice (4 options):
 What is the capital of France?
 A) London
 B) Paris
 C) Berlin
 D) Rome
-B
+MULTI:B
 
-What does CPU stand for?
-A) Central Processing Unit
-B) Computer Personal Unit
-C) Central Processor Undo
-D) Core Processing Unit
-A
+TYPE 2 - True/False questions:
+The Earth is flat.
+YESNO:False
+
+Rules:
+- For multiple choice: list exactly 4 options labeled A) B) C) D), then the answer as MULTI:X where X is the correct letter
+- For true/false questions: do NOT list options, just the question then YESNO:True or YESNO:False
+- Separate questions with a single blank line
+- Output ONLY the formatted questions, nothing else
+- Support any language including Vietnamese
 
 Now convert this text:
 ${text}`;

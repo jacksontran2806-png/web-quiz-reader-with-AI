@@ -333,6 +333,24 @@ textarea:focus { border-color: var(--accent); }
   pointer-events: none;
 }
 
+/* ── Yes/No buttons ───────────────────────────────────────────────── */
+.yesno-btn {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 20px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+#options-wrap:has(.yesno-btn) {
+  flex-direction: row;
+  gap: 16px;
+}
+
+#options-wrap:has(.yesno-btn) .yesno-btn {
+  flex: 1;
+}
+
 /* ── Mobile ───────────────────────────────────────────────────────── */
 @media (max-width: 500px) {
   .topbar { padding: 20px; }
