@@ -333,6 +333,17 @@ textarea:focus { border-color: var(--accent); }
   pointer-events: none;
 }
 
+/* ── Flash animation ──────────────────────────────────────────────── */
+@keyframes flashPulse {
+  0%   { transform: scale(1);    background: var(--accent2); }
+  50%  { transform: scale(1.03); background: #2a2a4a; }
+  100% { transform: scale(1);    background: var(--accent2); }
+}
+
+.option-btn.flash {
+  animation: flashPulse 0.3s ease;
+}
+
 /* ── True/False buttons ───────────────────────────────────────────── */
 .yesno-btn {
   font-size: 22px;
