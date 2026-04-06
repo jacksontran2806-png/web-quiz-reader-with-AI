@@ -17,6 +17,7 @@ body {
   color: var(--text);
   font-family: 'Courier New', monospace;
   min-height: 100vh;
+  font-size: 16px;
 }
 
 /* ── Splash ───────────────────────────────────────────────────────── */
@@ -30,7 +31,7 @@ body {
 
 .splash-inner {
   text-align: center;
-  width: 380px;
+  width: 460px;
   background: var(--card);
   border-radius: 4px;
   overflow: hidden;
@@ -43,23 +44,23 @@ body {
   font-family: Georgia, serif;
   font-style: italic;
   color: var(--muted);
-  margin-top: 32px;
-  font-size: 13px;
+  margin-top: 36px;
+  font-size: 16px;
 }
 
 .splash-inner h1.splash-name {
   font-family: Georgia, serif;
-  font-size: 36px;
+  font-size: 48px;
   color: var(--accent);
-  margin: 8px 0 4px;
+  margin: 10px 0 6px;
   letter-spacing: 2px;
 }
 
 .splash-inner p.splash-title {
   font-family: Georgia, serif;
-  font-size: 15px;
+  font-size: 18px;
   color: var(--muted);
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 @keyframes fadeOut {
@@ -67,7 +68,7 @@ body {
 }
 
 /* ── App ──────────────────────────────────────────────────────────── */
-#app { max-width: 720px; margin: 0 auto; min-height: 100vh; position: relative; }
+#app { max-width: 900px; margin: 0 auto; min-height: 100vh; position: relative; }
 
 .hidden { display: none !important; }
 
@@ -77,13 +78,13 @@ body {
 /* ── Topbar ───────────────────────────────────────────────────────── */
 .topbar {
   background: var(--accent2);
-  padding: 28px 40px 20px;
+  padding: 36px 60px 28px;
   text-align: center;
 }
 
 .topbar h1 {
   font-family: Georgia, serif;
-  font-size: 28px;
+  font-size: 36px;
   font-weight: bold;
   color: var(--text);
 }
@@ -92,18 +93,18 @@ body {
   font-family: Georgia, serif;
   font-style: italic;
   color: var(--muted);
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: 8px;
+  font-size: 16px;
 }
 
 .accent-bar { background: var(--accent); height: 3px; }
 
 /* ── Body ─────────────────────────────────────────────────────────── */
 .body {
-  padding: 30px 40px;
+  padding: 40px 60px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   flex: 1;
 }
 
@@ -115,8 +116,8 @@ body {
 
 .wing {
   position: absolute;
-  width: 130px;
-  height: 160px;
+  width: 150px;
+  height: 190px;
   object-fit: cover;
   object-position: center top;
   border-radius: 8px;
@@ -128,12 +129,12 @@ body {
 }
 
 .wing-left {
-  left: -60px;
+  left: -70px;
   transform: translateY(-50%) rotate(-15deg) scaleX(-1);
 }
 
 .wing-right {
-  right: -60px;
+  right: -70px;
   transform: translateY(-50%) rotate(15deg);
 }
 
@@ -147,41 +148,43 @@ body {
   background: var(--card);
   border: 1px solid var(--accent2);
   border-radius: 4px;
-  padding: 20px 24px;
+  padding: 28px 32px;
 }
 
 .card-label {
   font-weight: bold;
   color: var(--accent);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 17px;
 }
 
 .card-sub {
   color: var(--muted);
-  font-size: 11px;
-  margin-bottom: 12px;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
 .q-card p {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 18px;
+  line-height: 1.7;
   font-weight: bold;
 }
 
 /* ── Textarea ─────────────────────────────────────────────────────── */
 textarea {
   width: 100%;
-  height: 180px;
+  height: 240px;
   background: var(--bg);
   border: 1px solid var(--accent2);
   border-radius: 4px;
   color: var(--text);
   font-family: 'Courier New', monospace;
-  font-size: 12px;
-  padding: 12px;
+  font-size: 15px;
+  padding: 16px;
   resize: vertical;
   outline: none;
   transition: border-color 0.2s;
+  line-height: 1.6;
 }
 
 textarea:focus { border-color: var(--accent); }
@@ -193,27 +196,24 @@ textarea:focus { border-color: var(--accent); }
   border: none;
   border-radius: 4px;
   font-family: Georgia, serif;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: bold;
-  padding: 12px 24px;
+  padding: 16px 32px;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
   align-self: center;
-  min-width: 220px;
+  min-width: 260px;
 }
 
 .btn:hover { background: #ff6b81; transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 
-.btn-secondary {
-  background: var(--accent2);
-}
-
+.btn-secondary { background: var(--accent2); }
 .btn-secondary:hover { background: #1a4a80; }
 
 .btn-row {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -222,21 +222,21 @@ textarea:focus { border-color: var(--accent); }
 .divider {
   text-align: center;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 /* ── Muted text ───────────────────────────────────────────────────── */
 .muted {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   text-align: center;
 }
 
 /* ── Progress bar ─────────────────────────────────────────────────── */
 .progress-wrap {
   background: var(--accent2);
-  height: 6px;
-  border-radius: 3px;
+  height: 8px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -251,7 +251,7 @@ textarea:focus { border-color: var(--accent); }
 #options-wrap {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .option-btn {
@@ -260,8 +260,8 @@ textarea:focus { border-color: var(--accent); }
   border-radius: 4px;
   color: var(--text);
   font-family: 'Courier New', monospace;
-  font-size: 13px;
-  padding: 12px 18px;
+  font-size: 16px;
+  padding: 16px 22px;
   text-align: left;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
@@ -296,20 +296,20 @@ textarea:focus { border-color: var(--accent); }
 .feedback {
   text-align: center;
   font-weight: bold;
-  font-size: 14px;
-  min-height: 20px;
+  font-size: 17px;
+  min-height: 24px;
 }
 
 /* ── Score card ───────────────────────────────────────────────────── */
 .score-card {
   text-align: center;
   align-self: center;
-  min-width: 220px;
+  min-width: 260px;
 }
 
 #score-display {
   font-family: Georgia, serif;
-  font-size: 52px;
+  font-size: 68px;
   font-weight: bold;
 }
 
@@ -319,32 +319,32 @@ textarea:focus { border-color: var(--accent); }
   font-family: Georgia, serif;
   font-style: italic;
   color: var(--muted);
-  font-size: 12px;
-  margin-top: 8px;
+  font-size: 15px;
+  margin-top: 10px;
 }
 
 /* ── Watermark ────────────────────────────────────────────────────── */
 .watermark {
   position: fixed;
-  bottom: 10px;
-  right: 16px;
+  bottom: 12px;
+  right: 20px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   pointer-events: none;
 }
 
-/* ── Yes/No buttons ───────────────────────────────────────────────── */
+/* ── True/False buttons ───────────────────────────────────────────── */
 .yesno-btn {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
-  padding: 20px;
+  padding: 28px;
   text-align: center;
   letter-spacing: 1px;
 }
 
 #options-wrap:has(.yesno-btn) {
   flex-direction: row;
-  gap: 16px;
+  gap: 20px;
 }
 
 #options-wrap:has(.yesno-btn) .yesno-btn {
@@ -352,8 +352,9 @@ textarea:focus { border-color: var(--accent); }
 }
 
 /* ── Mobile ───────────────────────────────────────────────────────── */
-@media (max-width: 500px) {
-  .topbar { padding: 20px; }
-  .body { padding: 20px; }
-  .topbar h1 { font-size: 22px; }
+@media (max-width: 600px) {
+  .topbar { padding: 24px; }
+  .body { padding: 24px; }
+  .topbar h1 { font-size: 26px; }
+  textarea { font-size: 14px; height: 200px; }
 }
