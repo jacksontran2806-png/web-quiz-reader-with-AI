@@ -107,20 +107,78 @@ convertBtn.addEventListener('click', async () => {
 // ── File loading ──────────────────────────────────────────────────────────────
 loadFileBtn.addEventListener('click', () => fileInput.click());
 
-fileInput.addEventListener('change', () => {
+fileInput.addEventListener('change', async () => {
   const file = fileInput.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const qs = parseQuestions(e.target.result);
-    if (!qs.length) { alert('No valid questions found. Check the format.'); return; }
-    const err = validateQuestions(qs);
-    if (err) { alert(err); return; }
-    questions = qs;
-    startQuiz();
-  };
-  reader.readAsText(file, 'utf-8');
+
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if (ext === 'txt') {
+    const reader = new FileReader();
+    reader.onload = e => sendTextToAI(e.target.result);
+    reader.readAsText(file, 'utf-8');
+
+  } else if (ext === 'pdf') {
+    convertStatus.textContent = '📄 Reading PDF...';
+    const pdfjsLib = await loadPDFJS();
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      fullText += content.items.map(item => item.str).join(' ') + '\n';
+    }
+    sendTextToAI(fullText);
+
+  } else {
+    alert('Invalid file type. Please upload a .txt or .pdf file only.');
+    fileInput.value = '';
+  }
 });
+
+function loadPDFJS() {
+  return new Promise((resolve) => {
+    if (window.pdfjsLib) { resolve(window.pdfjsLib); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    script.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    document.head.appendChild(script);
+  });
+}
+
+async function sendTextToAI(text) {
+  if (!text.trim()) { alert('File appears to be empty.'); return; }
+  convertStatus.textContent = '✨ Converting with AI...';
+  convertBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/convert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Conversion failed');
+
+    const qs = parseQuestions(data.result);
+    if (!qs.length) throw new Error('No valid questions found after conversion.');
+    const err = validateQuestions(qs);
+    if (err) throw new Error(err);
+
+    questions = qs;
+    convertStatus.textContent = `✅ ${qs.length} questions ready!`;
+    setTimeout(startQuiz, 800);
+
+  } catch (e) {
+    convertStatus.textContent = `❌ ${e.message}`;
+    convertBtn.disabled = false;
+  }
+}
 
 // ── Quiz logic ────────────────────────────────────────────────────────────────
 function shuffle(arr) {
