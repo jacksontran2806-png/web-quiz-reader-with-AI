@@ -110,6 +110,7 @@ body {
 /* ── Wing photos ──────────────────────────────────────────────────── */
 .card-wrap {
   position: relative;
+  z-index: 1;
 }
 
 .wing {
@@ -123,16 +124,22 @@ body {
   top: 50%;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   pointer-events: none;
+  z-index: -1;
 }
 
 .wing-left {
-  left: -80px;
+  left: -60px;
   transform: translateY(-50%) rotate(-15deg);
 }
 
 .wing-right {
-  right: -80px;
+  right: -60px;
   transform: translateY(-50%) rotate(15deg);
+}
+
+.card {
+  position: relative;
+  z-index: 2;
 }
 
 /* ── Cards ────────────────────────────────────────────────────────── */
