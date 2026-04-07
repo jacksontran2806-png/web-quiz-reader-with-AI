@@ -11,7 +11,7 @@ const screens      = { welcome:  document.getElementById('screen-welcome'),
                         results:  document.getElementById('screen-results') };
 
 const convertBtn    = document.getElementById('convert-btn');
-const convertStatus = document.getElementById('convert-status');
+const convertStatus = document.getElementById('convert-status') || document.getElementById('convert-status');
 const pasteInput    = document.getElementById('paste-input');
 const loadFileBtn   = document.getElementById('load-file-btn');
 const fileInput     = document.getElementById('file-input');
@@ -291,3 +291,22 @@ newFileBtn.addEventListener('click', () => {
   fileInput.value           = '';
   showScreen('welcome');
 });
+
+// ── Particles ─────────────────────────────────────────────────────────────────
+(function spawnParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 16) + 's';
+    p.style.animationDelay    = (Math.random() * 12) + 's';
+    p.style.width  = (1 + Math.random() * 2) + 'px';
+    p.style.height = p.style.width;
+    p.style.opacity = Math.random() * 0.5;
+    const colors = ['#7c6af7','#a78bfa','#f472b6','#22d3ee'];
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    container.appendChild(p);
+  }
+})();
