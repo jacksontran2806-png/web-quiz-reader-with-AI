@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz App — by lamhariem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-inner">
+      <div class="splash-bar"></div>
+      <p class="splash-crafted">crafted by</p>
+      <h1 class="splash-name">lamhariem</h1>
+      <p class="splash-sub">✦ Quiz App ✦</p>
+      <div class="splash-bar"></div>
+    </div>
+  </div>
+
+  <!-- PARTICLES -->
+  <div class="particles" id="particles"></div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="hidden">
+
+    <!-- SCREEN 1: Welcome -->
+    <div id="screen-welcome" class="screen active">
+      <header class="header">
+        <div class="header-inner">
+          <div class="logo">✦ Quiz App</div>
+          <div class="header-tag">by lamhariem</div>
+        </div>
+        <div class="header-line"></div>
+      </header>
+
+      <div class="welcome-body">
+        <div class="hero">
+          <p class="hero-eyebrow">AI-POWERED</p>
+          <h1 class="hero-title">Turn anything into<br/><span class="gradient-text">a quiz</span></h1>
+          <p class="hero-sub">Paste notes, articles, or text in any language.<br/>AI generates questions instantly.</p>
+        </div>
+
+        <div class="input-section">
+          <div class="card-wrap">
+            <img src="quang minh.jpg" class="wing wing-left" alt="quang minh"/>
+            <img src="quang minh.jpg" class="wing wing-right" alt="quang minh"/>
+            <div class="input-card">
+              <div class="input-card-header">
+                <span class="input-dot"></span>
+                <span class="input-dot"></span>
+                <span class="input-dot"></span>
+                <span class="input-label">paste your content</span>
+              </div>
+              <textarea id="paste-input" placeholder="Drop anything here — lecture notes, Wikipedia articles, textbook chapters, existing questions... any language works."></textarea>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn-primary" id="convert-btn">
+              <span class="btn-icon">✨</span>
+              <span>Generate Quiz with AI</span>
+              <span class="btn-arrow">→</span>
+            </button>
+            <p class="status-text" id="convert-status"></p>
+          </div>
+
+          <div class="divider-row">
+            <div class="divider-line"></div>
+            <span class="divider-text">or upload a file</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <button class="btn-secondary" id="load-file-btn">
+            📂 &nbsp;Load .txt or .pdf
+          </button>
+          <input type="file" id="file-input" accept=".txt,.pdf" style="display:none"/>
+        </div>
+      </div>
+
+      <footer class="footer">✦ lamhariem</footer>
+    </div>
+
+    <!-- SCREEN 2: Question -->
+    <div id="screen-question" class="screen">
+      <div class="quiz-header">
+        <div class="quiz-meta">
+          <span id="q-title" class="q-title">Question 1 of 5</span>
+          <span id="q-score" class="q-score">Score: 0</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="quiz-body">
+        <div class="question-card">
+          <p id="q-text"></p>
+        </div>
+
+        <div id="options-wrap"></div>
+
+        <div class="quiz-bottom">
+          <p id="feedback" class="feedback"></p>
+          <button class="btn-next hidden" id="next-btn">Next →</button>
+        </div>
+      </div>
+
+      <footer class="footer">✦ lamhariem</footer>
+    </div>
+
+    <!-- SCREEN 3: Results -->
+    <div id="screen-results" class="screen">
+      <div class="results-body">
+        <div class="results-hero">
+          <p id="grade-text" class="grade-text"></p>
+          <div class="score-ring" id="score-card">
+            <p id="score-display"></p>
+            <p id="pct-display" class="pct"></p>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn-primary" id="play-again-btn">🔄 &nbsp;Play Again</button>
+          <button class="btn-secondary" id="new-file-btn">📂 &nbsp;New Questions</button>
+        </div>
+
+        <p class="credit">made with ♥ by lamhariem</p>
+      </div>
+
+      <footer class="footer">✦ lamhariem</footer>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
