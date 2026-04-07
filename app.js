@@ -1,17 +1,17 @@
 // ── State ─────────────────────────────────────────────────────────────────────
-let questions   = [];
-let currentIdx  = 0;
-let score       = 0;
-let answered    = false;
+let questions  = [];
+let currentIdx = 0;
+let score      = 0;
+let answered   = false;
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
-const app          = document.getElementById('app');
-const screens      = { welcome:  document.getElementById('screen-welcome'),
-                        question: document.getElementById('screen-question'),
-                        results:  document.getElementById('screen-results') };
+const app           = document.getElementById('app');
+const screens       = { welcome: document.getElementById('screen-welcome'),
+                         question: document.getElementById('screen-question'),
+                         results:  document.getElementById('screen-results') };
 
 const convertBtn    = document.getElementById('convert-btn');
-const convertStatus = document.getElementById('convert-status') || document.getElementById('convert-status');
+const convertStatus = document.getElementById('convert-status');
 const pasteInput    = document.getElementById('paste-input');
 const loadFileBtn   = document.getElementById('load-file-btn');
 const fileInput     = document.getElementById('file-input');
@@ -28,11 +28,12 @@ const gradeText     = document.getElementById('grade-text');
 const scoreDisplay  = document.getElementById('score-display');
 const pctDisplay    = document.getElementById('pct-display');
 const scoreCard     = document.getElementById('score-card');
+const scoreArc      = document.getElementById('score-arc');
 const playAgainBtn  = document.getElementById('play-again-btn');
 const newFileBtn    = document.getElementById('new-file-btn');
 
-// ── Splash → App ──────────────────────────────────────────────────────────────
-setTimeout(() => app.classList.remove('hidden'), 2300);
+// ── Splash ────────────────────────────────────────────────────────────────────
+setTimeout(() => app.classList.remove('hidden'), 2700);
 
 // ── Screen switching ──────────────────────────────────────────────────────────
 function showScreen(name) {
@@ -76,20 +77,20 @@ convertBtn.addEventListener('click', async () => {
   const raw = pasteInput.value.trim();
   if (!raw) { convertStatus.textContent = 'Please paste some content first.'; return; }
   convertBtn.disabled = true;
-  convertStatus.textContent = '✨ Converting with AI...';
+  convertStatus.textContent = '✦ Generating your quiz...';
   try {
     const res  = await fetch('/api/convert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: raw }) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Conversion failed');
     const qs  = parseQuestions(data.result);
-    if (!qs.length) throw new Error('No valid questions found after conversion.');
+    if (!qs.length) throw new Error('No valid questions found.');
     const err = validateQuestions(qs);
     if (err) throw new Error(err);
     questions = qs;
-    convertStatus.textContent = `✅ ${qs.length} questions ready!`;
-    setTimeout(startQuiz, 800);
+    convertStatus.textContent = `✓ ${qs.length} questions ready`;
+    setTimeout(startQuiz, 700);
   } catch (e) {
-    convertStatus.textContent = `❌ ${e.message}`;
+    convertStatus.textContent = `✕ ${e.message}`;
     convertBtn.disabled = false;
   }
 });
@@ -106,7 +107,7 @@ fileInput.addEventListener('change', async () => {
     reader.onload = e => sendTextToAI(e.target.result);
     reader.readAsText(file, 'utf-8');
   } else if (ext === 'pdf') {
-    convertStatus.textContent = '📄 Reading PDF...';
+    convertStatus.textContent = '✦ Reading PDF...';
     const pdfjsLib    = await loadPDFJS();
     const arrayBuffer = await file.arrayBuffer();
     const pdf         = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -118,7 +119,7 @@ fileInput.addEventListener('change', async () => {
     }
     sendTextToAI(fullText);
   } else {
-    alert('Invalid file type. Please upload a .txt or .pdf file only.');
+    alert('Please upload a .txt or .pdf file only.');
     fileInput.value = '';
   }
 });
@@ -139,21 +140,21 @@ function loadPDFJS() {
 
 async function sendTextToAI(text) {
   if (!text.trim()) { alert('File appears to be empty.'); return; }
-  convertStatus.textContent = '✨ Converting with AI...';
+  convertStatus.textContent = '✦ Generating your quiz...';
   convertBtn.disabled = true;
   try {
     const res  = await fetch('/api/convert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Conversion failed');
     const qs  = parseQuestions(data.result);
-    if (!qs.length) throw new Error('No valid questions found after conversion.');
+    if (!qs.length) throw new Error('No valid questions found.');
     const err = validateQuestions(qs);
     if (err) throw new Error(err);
     questions = qs;
-    convertStatus.textContent = `✅ ${qs.length} questions ready!`;
-    setTimeout(startQuiz, 800);
+    convertStatus.textContent = `✓ ${qs.length} questions ready`;
+    setTimeout(startQuiz, 700);
   } catch (e) {
-    convertStatus.textContent = `❌ ${e.message}`;
+    convertStatus.textContent = `✕ ${e.message}`;
     convertBtn.disabled = false;
   }
 }
@@ -168,8 +169,7 @@ function shuffle(arr) {
 
 function startQuiz() {
   shuffle(questions);
-  currentIdx = 0;
-  score      = 0;
+  currentIdx = 0; score = 0;
   showQuestion();
 }
 
@@ -184,7 +184,7 @@ function showQuestion() {
   const tot = questions.length;
 
   qTitle.textContent = `Question ${num} of ${tot}`;
-  qScore.textContent = `Score: ${score}`;
+  qScore.textContent = `${score} pts`;
   qText.textContent  = q.question;
   progressFill.style.width = `${((num - 1) / tot) * 100}%`;
 
@@ -193,18 +193,20 @@ function showQuestion() {
   if (q.type === 'yesno') {
     ['True', 'False'].forEach(opt => {
       const btn = document.createElement('button');
-      btn.className      = 'option-btn yesno-btn';
-      btn.textContent    = opt;
+      btn.className   = 'option-btn yesno-btn';
+      btn.textContent = opt;
       btn.dataset.letter = opt;
       btn.addEventListener('click', () => handleAnswer(btn, q));
       optionsWrap.appendChild(btn);
     });
   } else {
     q.options.forEach(opt => {
+      const letter = opt[0].toUpperCase();
       const btn = document.createElement('button');
       btn.className      = 'option-btn';
-      btn.textContent    = opt;
-      btn.dataset.letter = opt[0].toUpperCase();
+      btn.dataset.letter = letter;
+      btn.setAttribute('data-letter', letter);
+      btn.textContent    = opt.slice(3).trim(); // strip "A) "
       btn.addEventListener('click', () => handleAnswer(btn, q));
       optionsWrap.appendChild(btn);
     });
@@ -213,7 +215,6 @@ function showQuestion() {
   showScreen('question');
 }
 
-// ── Instant answer handler ────────────────────────────────────────────────────
 function handleAnswer(btn, q) {
   if (answered) return;
   answered = true;
@@ -222,203 +223,143 @@ function handleAnswer(btn, q) {
   const correct    = q.answer.toLowerCase();
   const isCorrect  = userAnswer === correct;
 
-  // lock all buttons immediately
   document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-
-  // brief flash on clicked button
   btn.classList.add('flash');
 
   setTimeout(() => {
     btn.classList.remove('flash');
-
-    // reveal correct/wrong colors
     document.querySelectorAll('.option-btn').forEach(b => {
-      if (b.dataset.letter.toLowerCase() === correct) {
-        b.classList.add('correct');
-      } else if (b.dataset.letter.toLowerCase() === userAnswer && !isCorrect) {
-        b.classList.add('wrong');
-      }
+      if (b.dataset.letter.toLowerCase() === correct) b.classList.add('correct');
+      else if (b.dataset.letter.toLowerCase() === userAnswer && !isCorrect) b.classList.add('wrong');
     });
 
     if (isCorrect) {
       score++;
-      feedback.textContent = '✅  Correct!';
+      feedback.textContent = '✓  Correct!';
       feedback.style.color = 'var(--success)';
     } else {
-      feedback.textContent = `❌  Wrong! Correct answer: ${q.answer}`;
+      feedback.textContent = `✕  Wrong — correct answer: ${q.answer}`;
       feedback.style.color = 'var(--error)';
     }
 
-    qScore.textContent = `Score: ${score}`;
+    qScore.textContent = `${score} pts`;
     nextBtn.classList.remove('hidden');
-    nextBtn.textContent = currentIdx + 1 < questions.length ? 'Next Question →' : 'See Results';
-  }, 300);
+    nextBtn.innerHTML = currentIdx + 1 < questions.length
+      ? 'Next <span>→</span>'
+      : 'See Results <span>→</span>';
+  }, 280);
 }
 
 nextBtn.addEventListener('click', () => {
-  if (currentIdx + 1 < questions.length) {
-    currentIdx++;
-    showQuestion();
-  } else {
-    showResults();
-  }
+  if (currentIdx + 1 < questions.length) { currentIdx++; showQuestion(); }
+  else showResults();
 });
 
 // ── Results ───────────────────────────────────────────────────────────────────
 function showResults() {
   const tot = questions.length;
   const pct = Math.round((score / tot) * 100);
-  let grade, color;
-  if (pct === 100)    { grade = 'Perfect! 🏆';              color = 'var(--success)'; }
-  else if (pct >= 70) { grade = 'Well done! 🎉';            color = 'var(--accent)';  }
-  else if (pct >= 40) { grade = 'Keep practising 📚';       color = '#f39c12';        }
-  else                { grade = 'Better luck next time 💪'; color = 'var(--error)';   }
 
-  gradeText.textContent       = grade;
-  scoreDisplay.textContent    = `${score} / ${tot}`;
-  scoreDisplay.style.color    = color;
-  pctDisplay.textContent      = `${pct}% correct`;
-  scoreCard.style.borderColor = color;
-  progressFill.style.width    = '100%';
+  let grade, color;
+  if (pct === 100)    { grade = 'Flawless. 🏆';             color = 'var(--success)'; }
+  else if (pct >= 70) { grade = 'Well done.';               color = 'var(--violet)';  }
+  else if (pct >= 40) { grade = 'Keep going.';              color = 'var(--amber)';   }
+  else                { grade = 'Practice makes perfect.';  color = 'var(--error)';   }
+
+  gradeText.textContent    = grade;
+  scoreDisplay.textContent = `${score}/${tot}`;
+  scoreDisplay.style.color = color;
+  pctDisplay.textContent   = `${pct}% correct`;
+
+  // Animate arc
+  const circumference = 2 * Math.PI * 54;
+  const offset = circumference - (pct / 100) * circumference;
+  if (scoreArc) {
+    scoreArc.style.stroke = color;
+    setTimeout(() => { scoreArc.style.strokeDashoffset = offset; }, 100);
+  }
+
+  progressFill.style.width = '100%';
   showScreen('results');
 }
 
 playAgainBtn.addEventListener('click', startQuiz);
 newFileBtn.addEventListener('click', () => {
-  pasteInput.value          = '';
+  pasteInput.value = '';
   convertStatus.textContent = '';
-  convertBtn.disabled       = false;
-  fileInput.value           = '';
+  convertBtn.disabled = false;
+  fileInput.value = '';
   showScreen('welcome');
 });
 
-// ── Particles ─────────────────────────────────────────────────────────────────
-(function spawnParticles() {
-  const container = document.getElementById('particles');
-  if (!container) return;
-  for (let i = 0; i < 30; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.animationDuration = (8 + Math.random() * 16) + 's';
-    p.style.animationDelay    = (Math.random() * 12) + 's';
-    p.style.width  = (1 + Math.random() * 2) + 'px';
-    p.style.height = p.style.width;
-    p.style.opacity = Math.random() * 0.5;
-    const colors = ['#7c6af7','#a78bfa','#f472b6','#22d3ee'];
-    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-    container.appendChild(p);
-  }
-})();
-
-// ── Magic Canvas ──────────────────────────────────────────────────────────────
-(function initMagicCanvas() {
-  const canvas = document.getElementById('magic-canvas');
+// ── Background canvas ─────────────────────────────────────────────────────────
+(function initCanvas() {
+  const canvas = document.getElementById('bg-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
 
-  // Stars
-  const stars = Array.from({ length: 120 }, () => ({
+  const stars = Array.from({ length: 80 }, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
-    r: Math.random() * 1.2,
-    speed: 0.2 + Math.random() * 0.3,
-    twinkle: Math.random() * Math.PI * 2,
-    twinkleSpeed: 0.02 + Math.random() * 0.03,
-    color: ['#9d6fff','#c084fc','#f472b6','#fbbf24','#ffffff'][Math.floor(Math.random()*5)]
-  }));
-
-  // Magic orbs drifting across screen
-  const orbs = Array.from({ length: 6 }, () => ({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    r: 60 + Math.random() * 100,
-    vx: (Math.random() - 0.5) * 0.4,
-    vy: (Math.random() - 0.5) * 0.4,
-    color: ['rgba(157,111,255','rgba(196,132,252','rgba(244,114,182','rgba(34,211,238'][Math.floor(Math.random()*4)],
+    r: 0.4 + Math.random() * 0.8,
     phase: Math.random() * Math.PI * 2,
+    speed: 0.008 + Math.random() * 0.015,
   }));
 
-  // Shooting stars
-  let shootingStars = [];
-  function spawnShootingStar() {
-    shootingStars.push({
-      x: Math.random() * window.innerWidth * 0.7,
-      y: Math.random() * window.innerHeight * 0.4,
-      len: 80 + Math.random() * 120,
-      speed: 6 + Math.random() * 6,
-      angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
-      life: 1,
-    });
-  }
-  setInterval(spawnShootingStar, 3000 + Math.random() * 4000);
+  const orbs = Array.from({ length: 4 }, (_, i) => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 200 + Math.random() * 200,
+    vx: (Math.random() - 0.5) * 0.25,
+    vy: (Math.random() - 0.5) * 0.25,
+    color: ['99,102,241','167,139,250','251,113,133','251,191,36'][i],
+  }));
 
-  function draw(t) {
+  let shooters = [];
+  setInterval(() => {
+    shooters.push({ x: Math.random() * innerWidth * 0.6, y: Math.random() * innerHeight * 0.3,
+      len: 100 + Math.random() * 80, speed: 7 + Math.random() * 5, life: 1 });
+  }, 4000);
+
+  function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Orbs
     orbs.forEach(o => {
-      o.phase += 0.005;
-      o.x += o.vx;
-      o.y += o.vy;
+      o.x += o.vx; o.y += o.vy;
       if (o.x < -o.r) o.x = canvas.width + o.r;
       if (o.x > canvas.width + o.r) o.x = -o.r;
       if (o.y < -o.r) o.y = canvas.height + o.r;
       if (o.y > canvas.height + o.r) o.y = -o.r;
-
-      const alpha = 0.04 + Math.sin(o.phase) * 0.02;
-      const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
-      grad.addColorStop(0, `${o.color},${alpha})`);
-      grad.addColorStop(1, `${o.color},0)`);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
-      ctx.fill();
+      const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+      g.addColorStop(0, `rgba(${o.color},0.06)`);
+      g.addColorStop(1, `rgba(${o.color},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill();
     });
 
-    // Stars
     stars.forEach(s => {
-      s.twinkle += s.twinkleSpeed;
-      const alpha = 0.3 + Math.sin(s.twinkle) * 0.4;
-      ctx.globalAlpha = Math.max(0, alpha);
-      ctx.fillStyle = s.color;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
+      s.phase += s.speed;
+      ctx.globalAlpha = 0.2 + Math.sin(s.phase) * 0.3;
+      ctx.fillStyle = '#a78bfa';
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
     });
     ctx.globalAlpha = 1;
 
-    // Shooting stars
-    shootingStars = shootingStars.filter(ss => ss.life > 0);
-    shootingStars.forEach(ss => {
-      ss.x += Math.cos(ss.angle) * ss.speed;
-      ss.y += Math.sin(ss.angle) * ss.speed;
-      ss.life -= 0.025;
-
-      const grad = ctx.createLinearGradient(
-        ss.x, ss.y,
-        ss.x - Math.cos(ss.angle) * ss.len,
-        ss.y - Math.sin(ss.angle) * ss.len
-      );
-      grad.addColorStop(0, `rgba(255,255,255,${ss.life})`);
-      grad.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(ss.x, ss.y);
-      ctx.lineTo(ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
-      ctx.stroke();
+    shooters = shooters.filter(s => s.life > 0);
+    shooters.forEach(s => {
+      s.x += s.speed * 0.7; s.y += s.speed * 0.7; s.life -= 0.02;
+      const g = ctx.createLinearGradient(s.x, s.y, s.x - s.len * 0.7, s.y - s.len * 0.7);
+      g.addColorStop(0, `rgba(255,255,255,${s.life * 0.8})`);
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.len * 0.7, s.y - s.len * 0.7); ctx.stroke();
     });
 
     requestAnimationFrame(draw);
   }
-
   requestAnimationFrame(draw);
 })();

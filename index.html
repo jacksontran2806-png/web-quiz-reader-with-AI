@@ -3,121 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quiz App — by lamhariem</title>
+  <title>Quizify — by lamhariem</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- MAGICAL CANVAS BACKGROUND -->
-  <canvas id="magic-canvas"></canvas>
+  <canvas id="bg-canvas"></canvas>
 
   <!-- SPLASH -->
   <div id="splash">
     <div class="splash-inner">
-      <div class="splash-rune">✦</div>
-      <p class="splash-crafted">conjured by</p>
+      <div class="splash-logo">Q</div>
       <h1 class="splash-name">lamhariem</h1>
-      <p class="splash-sub">✦ The Quiz Grimoire ✦</p>
-      <div class="splash-orbs">
-        <span class="orb"></span>
-        <span class="orb"></span>
-        <span class="orb"></span>
-      </div>
+      <p class="splash-sub">presents</p>
+      <h2 class="splash-title">Quizify</h2>
     </div>
   </div>
 
-  <!-- MAIN APP -->
   <div id="app" class="hidden">
 
     <!-- SCREEN 1: Welcome -->
     <div id="screen-welcome" class="screen active">
-      <header class="header">
-        <div class="header-inner">
-          <div class="logo">✦ The Quiz Grimoire</div>
-          <div class="header-tag">by lamhariem</div>
-        </div>
-        <div class="header-line"></div>
-      </header>
+      <nav class="nav">
+        <div class="nav-brand">Quizify</div>
+        <div class="nav-tag">by lamhariem</div>
+      </nav>
 
-      <!-- Floating magical objects -->
-      <div class="magic-objects">
-        <div class="magic-obj crystal">💎</div>
-        <div class="magic-obj moon">🌙</div>
-        <div class="magic-obj star1">⭐</div>
-        <div class="magic-obj scroll">📜</div>
-        <div class="magic-obj star2">✨</div>
-        <div class="magic-obj eye">🔮</div>
-        <div class="magic-obj feather">🪶</div>
-        <div class="magic-obj flame">🕯️</div>
-      </div>
-
-      <div class="welcome-body">
+      <main class="welcome-main">
         <div class="hero">
-          <p class="hero-eyebrow">— Ancient Knowledge Awaits —</p>
-          <h1 class="hero-title">Turn any scroll into<br/><span class="gradient-text">a trial of wisdom</span></h1>
-          <p class="hero-sub">Offer your notes, tomes, or texts in any tongue.<br/>The grimoire shall forge your questions.</p>
+          <div class="hero-badge">✦ AI-Powered Quiz Generator</div>
+          <h1 class="hero-title">Learn anything.<br/><em>Quiz everything.</em></h1>
+          <p class="hero-desc">Paste your notes, articles, or any text in any language — Quizify turns it into an interactive quiz in seconds.</p>
         </div>
 
-        <div class="input-section">
-          <div class="input-card">
-            <div class="input-card-header">
-              <span class="rune">᚛</span>
-              <span class="input-label">inscribe your knowledge</span>
-              <span class="rune">᚜</span>
+        <div class="input-wrap">
+          <div class="input-box" id="input-box">
+            <div class="input-toolbar">
+              <div class="toolbar-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <span class="toolbar-hint">paste anything here</span>
             </div>
-            <textarea id="paste-input" placeholder="Pour your knowledge here — lecture notes, articles, textbook chapters, existing questions... any language, any format."></textarea>
-            <div class="card-glow"></div>
+            <textarea id="paste-input" placeholder="Your notes, a Wikipedia article, a PDF excerpt, existing questions... any language works.&#10;&#10;AI will handle the rest."></textarea>
           </div>
 
-          <div class="action-row">
-            <button class="btn-primary" id="convert-btn">
-              <span class="btn-icon">🔮</span>
-              <span>Cast the Spell</span>
+          <div class="cta-wrap">
+            <button class="cta-btn" id="convert-btn">
+              Generate Quiz
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
-            <p class="status-text" id="convert-status"></p>
+            <p class="cta-status" id="convert-status"></p>
           </div>
 
-          <div class="divider-row">
-            <div class="divider-line"></div>
-            <span class="divider-text">or summon from a scroll</span>
-            <div class="divider-line"></div>
+          <div class="or-row">
+            <span class="or-line"></span>
+            <span class="or-text">or upload</span>
+            <span class="or-line"></span>
           </div>
 
-          <button class="btn-secondary" id="load-file-btn">
-            📜 &nbsp;Open a Scroll (.txt or .pdf)
+          <button class="upload-btn" id="load-file-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Upload .txt or .pdf
           </button>
           <input type="file" id="file-input" accept=".txt,.pdf" style="display:none"/>
         </div>
-      </div>
+      </main>
 
       <footer class="footer">✦ lamhariem</footer>
     </div>
 
     <!-- SCREEN 2: Question -->
     <div id="screen-question" class="screen">
-      <div class="quiz-header">
-        <div class="quiz-meta">
-          <span id="q-title" class="q-title">Question 1 of 5</span>
-          <span id="q-score" class="q-score">Score: 0</span>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
+      <div class="quiz-topbar">
+        <span id="q-title" class="q-label">Question 1 of 5</span>
+        <span id="q-score" class="q-score-label">0 pts</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
       </div>
 
-      <div class="quiz-body">
-        <div class="question-card">
-          <div class="question-rune">⚡</div>
+      <div class="quiz-main">
+        <div class="q-card">
           <p id="q-text"></p>
         </div>
-
         <div id="options-wrap"></div>
-
-        <div class="quiz-bottom">
+        <div class="quiz-footer">
           <p id="feedback" class="feedback"></p>
-          <button class="btn-next hidden" id="next-btn">Continue the Trial →</button>
+          <button class="next-btn hidden" id="next-btn">Next <span>→</span></button>
         </div>
       </div>
 
@@ -126,24 +100,34 @@
 
     <!-- SCREEN 3: Results -->
     <div id="screen-results" class="screen">
-      <div class="results-body">
-        <div class="results-hero">
-          <div class="results-rune">🏆</div>
-          <p id="grade-text" class="grade-text"></p>
-          <div class="score-ring" id="score-card">
-            <p id="score-display"></p>
-            <p id="pct-display" class="pct"></p>
+      <div class="results-main">
+        <div class="results-top">
+          <p id="grade-text" class="grade-label"></p>
+          <div class="score-circle" id="score-card">
+            <svg class="score-ring-svg" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="#1a1a2e" stroke-width="8"/>
+              <circle id="score-arc" cx="60" cy="60" r="54" fill="none" stroke="url(#arcGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="339" transform="rotate(-90 60 60)"/>
+              <defs>
+                <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#a78bfa"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="score-inner">
+              <p id="score-display"></p>
+              <p id="pct-display" class="score-pct"></p>
+            </div>
           </div>
         </div>
 
-        <div class="results-actions">
-          <button class="btn-primary" id="play-again-btn">🔮 &nbsp;Try Again</button>
-          <button class="btn-secondary" id="new-file-btn">📜 &nbsp;New Scroll</button>
+        <div class="results-btns">
+          <button class="cta-btn" id="play-again-btn">Play Again</button>
+          <button class="upload-btn" id="new-file-btn">New Questions</button>
         </div>
 
-        <p class="credit">forged with ♥ by lamhariem</p>
+        <p class="credit">made with ♥ by lamhariem</p>
       </div>
-
       <footer class="footer">✦ lamhariem</footer>
     </div>
 
