@@ -310,3 +310,115 @@ newFileBtn.addEventListener('click', () => {
     container.appendChild(p);
   }
 })();
+
+// ── Magic Canvas ──────────────────────────────────────────────────────────────
+(function initMagicCanvas() {
+  const canvas = document.getElementById('magic-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Stars
+  const stars = Array.from({ length: 120 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.2,
+    speed: 0.2 + Math.random() * 0.3,
+    twinkle: Math.random() * Math.PI * 2,
+    twinkleSpeed: 0.02 + Math.random() * 0.03,
+    color: ['#9d6fff','#c084fc','#f472b6','#fbbf24','#ffffff'][Math.floor(Math.random()*5)]
+  }));
+
+  // Magic orbs drifting across screen
+  const orbs = Array.from({ length: 6 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 60 + Math.random() * 100,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    color: ['rgba(157,111,255','rgba(196,132,252','rgba(244,114,182','rgba(34,211,238'][Math.floor(Math.random()*4)],
+    phase: Math.random() * Math.PI * 2,
+  }));
+
+  // Shooting stars
+  let shootingStars = [];
+  function spawnShootingStar() {
+    shootingStars.push({
+      x: Math.random() * window.innerWidth * 0.7,
+      y: Math.random() * window.innerHeight * 0.4,
+      len: 80 + Math.random() * 120,
+      speed: 6 + Math.random() * 6,
+      angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
+      life: 1,
+    });
+  }
+  setInterval(spawnShootingStar, 3000 + Math.random() * 4000);
+
+  function draw(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Orbs
+    orbs.forEach(o => {
+      o.phase += 0.005;
+      o.x += o.vx;
+      o.y += o.vy;
+      if (o.x < -o.r) o.x = canvas.width + o.r;
+      if (o.x > canvas.width + o.r) o.x = -o.r;
+      if (o.y < -o.r) o.y = canvas.height + o.r;
+      if (o.y > canvas.height + o.r) o.y = -o.r;
+
+      const alpha = 0.04 + Math.sin(o.phase) * 0.02;
+      const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+      grad.addColorStop(0, `${o.color},${alpha})`);
+      grad.addColorStop(1, `${o.color},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Stars
+    stars.forEach(s => {
+      s.twinkle += s.twinkleSpeed;
+      const alpha = 0.3 + Math.sin(s.twinkle) * 0.4;
+      ctx.globalAlpha = Math.max(0, alpha);
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // Shooting stars
+    shootingStars = shootingStars.filter(ss => ss.life > 0);
+    shootingStars.forEach(ss => {
+      ss.x += Math.cos(ss.angle) * ss.speed;
+      ss.y += Math.sin(ss.angle) * ss.speed;
+      ss.life -= 0.025;
+
+      const grad = ctx.createLinearGradient(
+        ss.x, ss.y,
+        ss.x - Math.cos(ss.angle) * ss.len,
+        ss.y - Math.sin(ss.angle) * ss.len
+      );
+      grad.addColorStop(0, `rgba(255,255,255,${ss.life})`);
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(ss.x, ss.y);
+      ctx.lineTo(ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+      ctx.stroke();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+})();
