@@ -40,11 +40,14 @@ ${text}`;
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'server-side-fallback-2026-07-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+        model: 'claude-sonnet-5-5',
+        max_tokens: 16000,
+        output_config: { effort: 'low' },
+        fallbacks: 'default',
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -52,7 +55,12 @@ ${text}`;
     const data = await response.json();
     if (!response.ok) throw new Error(data.error?.message || 'API error');
 
-    const result = data.content[0].text;
+    if (data.stop_reason === 'refusal') throw new Error('The AI declined to convert this text');
+
+    const result = data.content
+      .filter(block => block.type === 'text')
+      .map(block => block.text)
+      .join('');
     return res.status(200).json({ result });
 
   } catch (e) {
